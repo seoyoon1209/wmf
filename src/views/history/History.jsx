@@ -4,24 +4,17 @@ import { Droplet, NotebookText, ChevronRight } from 'lucide-react'
 import Layout from '../../components/common/Layout.jsx'
 import api from '../../api/axios.js'
 import { useAuth } from '../../context/AuthContext.jsx'
-import { parseLocalDate } from '../../utils/date.js'
 
 function formatDate(d) {
-  const date = parseLocalDate(d)
+  const date = new Date(d)
   return `${date.getMonth() + 1}월 ${date.getDate()}일`
 }
 
-const NOTABLE_SYMPTOMS = [
-  ['headache', '두통'],
-  ['stomachache', '복통'],
-  ['sore_breasts', '유방 압통'],
-  ['mood_swing', '기분 변화'],
-  ['fatigue', '피로'],
-  ['bloating', '복부 팽만'],
-]
-
 function symptomSummary(diary) {
-  const parts = NOTABLE_SYMPTOMS.filter(([key]) => diary[key] > 1).map(([, label]) => label)
+  const parts = []
+  if (diary.headache != null) parts.push('두통')
+  if (diary.stomachache != null) parts.push('복통')
+  if (diary.mood) parts.push(`기분 ${diary.mood}`)
   return parts.length ? parts.join(' · ') : '특이 증상 없음'
 }
 

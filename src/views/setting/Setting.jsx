@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router'
 import { LogOut } from 'lucide-react'
 import Layout from '../../components/common/Layout.jsx'
 import ProfileForm from '../../components/setting/ProfileForm.jsx'
-import HormoneForm from '../../components/setting/HormoneForm.jsx'
 import { useAuth } from '../../context/AuthContext.jsx'
 
 function Setting() {
@@ -38,12 +37,8 @@ function Setting() {
           </div>
         </div>
 
-        <div className="mt-5">
+        <div className="mb-6 mt-5">
           <ProfileForm />
-        </div>
-
-        <div className="mb-6 mt-3">
-          <HormoneForm />
         </div>
       </div>
     </Layout>

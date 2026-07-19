@@ -7,16 +7,10 @@ import SummaryCard from '../../components/record/SummaryCard.jsx'
 import HistoryItem from '../../components/record/HistoryItem.jsx'
 import api from '../../api/axios.js'
 import { useAuth } from '../../context/AuthContext.jsx'
-import { useToast } from '../../context/ToastContext.jsx'
-import { parseLocalDate } from '../../utils/date.js'
-
-function toDateStr(d) {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-}
 
 function formatRange(startDate, endDate) {
   const format = (d) => {
-    const date = parseLocalDate(d)
+    const date = new Date(d)
     return `${date.getMonth() + 1}월 ${date.getDate()}일`
   }
   return endDate ? `${format(startDate)} - ${format(endDate)}` : `${format(startDate)} ~ 진행중`
@@ -24,29 +18,12 @@ function formatRange(startDate, endDate) {
 
 function daysBetween(startDate, endDate) {
   if (!endDate) return null
-  const ms = parseLocalDate(endDate) - parseLocalDate(startDate)
+  const ms = new Date(endDate) - new Date(startDate)
   return Math.round(ms / (1000 * 60 * 60 * 24)) + 1
-}
-
-function buildPeriodDates(records) {
-  const dates = new Set()
-  records.forEach((r) => {
-    const start = parseLocalDate(r.start_date)
-    const end = r.end_date ? parseLocalDate(r.end_date) : new Date()
-    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-      dates.add(toDateStr(d))
-    }
-  })
-  return dates
 }
 
 function Record() {
   const { user } = useAuth()
-  const { showToast } = useToast()
-  const today = new Date()
-  const [viewYear, setViewYear] = useState(today.getFullYear())
-  const [viewMonth, setViewMonth] = useState(today.getMonth())
-  const [selectedDate, setSelectedDate] = useState(toDateStr(today))
   const [records, setRecords] = useState([])
 
   const loadRecords = () => {
@@ -65,44 +42,25 @@ function Record() {
   const avgCycle =
     completed.length > 1
       ? Math.round(
-          (parseLocalDate(completed[0].start_date) - parseLocalDate(completed[completed.length - 1].start_date)) /
+          (new Date(completed[0].start_date) - new Date(completed[completed.length - 1].start_date)) /
             (1000 * 60 * 60 * 24 * (completed.length - 1)),
         )
       : null
 
-  const handlePrevMonth = () => {
-    const next = new Date(viewYear, viewMonth - 1, 1)
-    setViewYear(next.getFullYear())
-    setViewMonth(next.getMonth())
-  }
-
-  const handleNextMonth = () => {
-    const next = new Date(viewYear, viewMonth + 1, 1)
-    setViewYear(next.getFullYear())
-    setViewMonth(next.getMonth())
-  }
-
   const handleStart = async () => {
-    await api.post(`/records/${user.username}`, { start_date: selectedDate })
-    showToast('시작일이 저장되었습니다')
+    const today = new Date().toISOString().slice(0, 10)
+    await api.post(`/records/${user.username}`, { start_date: today })
     loadRecords()
   }
 
   const handleEnd = async () => {
+    const today = new Date().toISOString().slice(0, 10)
     try {
-      await api.patch(`/records/${user.username}/latest`, { end_date: selectedDate })
-      showToast('종료일이 저장되었습니다')
+      await api.patch(`/records/${user.username}/latest`, { end_date: today })
       loadRecords()
     } catch {
-      showToast('종료할 진행 중인 기록이 없어요')
+      // 종료할 진행 중인 기록이 없는 경우 조용히 무시
     }
-  }
-
-  const handleDelete = async (recordId) => {
-    if (!window.confirm('이 기록을 삭제할까요?')) return
-    await api.delete(`/records/${user.username}/${recordId}`)
-    showToast('기록이 삭제되었습니다')
-    loadRecords()
   }
 
   return (
@@ -112,16 +70,7 @@ function Record() {
         <p className="mt-1 text-sm text-gray-400">오늘의 상태를 기록하고 주기를 확인하세요.</p>
 
         <div className="mt-5">
-          <Calendar
-            year={viewYear}
-            month={viewMonth}
-            onPrevMonth={handlePrevMonth}
-            onNextMonth={handleNextMonth}
-            selectedDate={selectedDate}
-            onSelectDate={setSelectedDate}
-            periodDates={buildPeriodDates(records)}
-            todayStr={toDateStr(today)}
-          />
+          <Calendar />
         </div>
 
         <div className="mt-4 grid grid-cols-2 gap-3">
@@ -149,6 +98,9 @@ function Record() {
 
         <div className="mt-6 flex items-center justify-between">
           <h2 className="text-sm font-semibold text-gray-900">지난 기록</h2>
+          <button type="button" className="text-xs text-rose-400">
+            전체 보기
+          </button>
         </div>
         <ul className="mt-2 space-y-2">
           {records.map((r) => {
@@ -158,7 +110,6 @@ function Record() {
                 key={r.record_id}
                 range={formatRange(r.start_date, r.end_date)}
                 detail={days ? `${days}일 동안` : '진행 중'}
-                onDelete={() => handleDelete(r.record_id)}
               />
             )
           })}

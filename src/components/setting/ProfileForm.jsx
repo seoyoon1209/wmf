@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react'
 import api from '../../api/axios.js'
 import { useAuth } from '../../context/AuthContext.jsx'
-import { useToast } from '../../context/ToastContext.jsx'
 
 function ProfileForm() {
   const { user, updateUser } = useAuth()
-  const { showToast } = useToast()
   const [name, setName] = useState(user?.name ?? '')
   const [mode, setMode] = useState('simple')
   const [consent, setConsent] = useState(true)
+  const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
 
   useEffect(() => {
@@ -26,7 +25,8 @@ function ProfileForm() {
       updateUser(data)
       await api.put(`/settings/${user.username}/mode`, { mode })
       await api.put(`/settings/${user.username}/consent`, { consent })
-      showToast('변경사항이 저장되었습니다')
+      setSaved(true)
+      setTimeout(() => setSaved(false), 1500)
     } catch (err) {
       setError(err.response?.data?.detail ?? '저장에 실패했어요.')
     }
@@ -101,7 +101,7 @@ function ProfileForm() {
 
       {error && <p className="text-center text-xs text-rose-500">{error}</p>}
       <button type="submit" className="w-full rounded-xl bg-rose-400 py-3 text-sm font-semibold text-white shadow-sm">
-        변경사항 저장
+        {saved ? '저장됨' : '변경사항 저장'}
       </button>
     </form>
   )
