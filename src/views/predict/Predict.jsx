@@ -9,16 +9,30 @@ import { useAuth } from '../../context/AuthContext.jsx'
 
 const RISK_PERCENT = { 낮음: 25, 보통: 50, 높음: 75, 매우높음: 90 }
 const HIGH_RISK = new Set(['높음', '매우높음'])
+const PHASE_KO = { Menstrual: '월경기', Follicular: '난포기', Fertility: '가임기', Luteal: '황체기' }
 
 function Predict() {
   const { user } = useAuth()
   const [prediction, setPrediction] = useState(null)
   const [phase, setPhase] = useState(null)
+  const [guide, setGuide] = useState(null)
+  const [guideError, setGuideError] = useState('')
 
   useEffect(() => {
-    api.get(`/predictions/${user.username}`).then(({ data }) => setPrediction(data))
     api.get(`/predictions/${user.username}/phase`).then(({ data }) => setPhase(data))
+    api.get(`/predictions/${user.username}`).then(({ data }) => {
+      setPrediction(data)
+      setGuide(null)
+      setGuideError('')
+      api
+        .get(`/predictions/${user.username}/guide`)
+        .then(({ data: g }) => setGuide(g.guide))
+        .catch((err) => setGuideError(err.response?.data?.detail ?? 'AI 가이드를 불러오지 못했어요.'))
+    })
   }, [user.username])
+
+  const factors = prediction?.factors ?? []
+  const maxAbs = Math.max(...factors.map((f) => Math.abs(f.value)), 0.01)
 
   return (
     <Layout>
@@ -30,14 +44,14 @@ function Predict() {
           <div className="flex items-center justify-between">
             <span className="text-sm text-rose-100">다음 주기 예측</span>
             <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs">
-              {phase?.phase === 'luteal' ? '황체기' : phase?.phase ?? '분석 중'}
+              {PHASE_KO[phase?.phase] ?? '분석 중'}
             </span>
           </div>
           <p className="mt-2 text-3xl font-bold">
             {phase?.days_to_period != null ? `${phase.days_to_period}일 후` : '계산 중'}
           </p>
           <p className="mt-1 text-sm text-rose-100">
-            {phase?.days_to_period != null ? '생리 시작 예정' : '기록을 더 쌓으면 예측이 정확해져요'}
+            {phase?.days_to_period != null ? '생리 시작 예정' : '월경 기록을 남기면 예측이 시작돼요'}
           </p>
           <div className="mt-4 flex items-center gap-3">
             <div className="h-1.5 flex-1 rounded-full bg-white/30">
@@ -68,16 +82,18 @@ function Predict() {
         <div className="mt-6 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold text-gray-900">예측 근거</h2>
-            <span className="text-xs text-gray-400">AI 기여도 분석</span>
+            <span className="text-xs text-gray-400">모델 기여도 분석</span>
           </div>
           <div className="mt-2 divide-y divide-gray-50">
-            {(prediction?.factors ?? []).map((f) => (
-              <FactorRow key={f.label} {...f} />
+            {factors.map((f) => (
+              <FactorRow key={f.label} {...f} maxAbs={maxAbs} />
             ))}
           </div>
-          <p className="mt-2 text-xs leading-relaxed text-gray-400">
-            * 에스트로겐 수치의 급격한 저하가 통증 예측의 가장 큰 원인으로 분석되었습니다.
-          </p>
+          {prediction?.confidence != null && (
+            <p className="mt-2 text-xs leading-relaxed text-gray-400">
+              모델 확신도 {Math.round(prediction.confidence * 100)}% · 기록이 쌓일수록 정확해져요.
+            </p>
+          )}
         </div>
 
         <div className="mb-6 mt-6 rounded-2xl bg-rose-50 p-4">
@@ -86,19 +102,8 @@ function Predict() {
               <Sparkles size={16} />
             </span>
             <p className="text-sm leading-relaxed text-gray-700">
-              안녕하세요! 현재 분석 결과, 통증 위험도가 평소보다 높게 나타나고 있습니다.{' '}
-              <span className="font-semibold text-rose-500">충분한 수분 섭취</span>를 권장하며, 오늘 밤에는
-              평소보다 1시간 일찍 취침하여 <span className="font-semibold text-rose-500">심부 온도 조절</span>을
-              도와보세요. 가벼운 스트레칭이 복통 완화에 도움이 될 수 있습니다.
+              {guideError ? guideError : (guide ?? 'AI가 오늘의 가이드를 작성하고 있어요...')}
             </p>
-          </div>
-          <div className="mt-3 flex gap-2">
-            <button type="button" className="rounded-full bg-white px-3 py-1.5 text-xs font-medium text-rose-500 shadow-sm">
-              추천 스트레칭 보기
-            </button>
-            <button type="button" className="rounded-full bg-white px-3 py-1.5 text-xs font-medium text-rose-500 shadow-sm">
-              식단 가이드
-            </button>
           </div>
         </div>
       </div>

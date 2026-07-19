@@ -1,6 +1,6 @@
-function FactorRow({ label, value }) {
+function FactorRow({ label, value, maxAbs = 1 }) {
   const positive = value > 0
-  const width = Math.min(Math.abs(value) * 200, 100)
+  const width = Math.min((Math.abs(value) / maxAbs) * 100, 100)
 
   return (
     <div className="flex items-center justify-between gap-3 py-2">
