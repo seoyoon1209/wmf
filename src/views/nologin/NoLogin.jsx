@@ -1,4 +1,4 @@
-// 비로그인 시 기본 화면 - 기능 소개
+// Default screen when logged out - feature intro
 import { useNavigate } from 'react-router'
 import { NotebookPen, Sparkles, Lock } from 'lucide-react'
 
@@ -6,20 +6,20 @@ const FEATURES = [
   {
     icon: NotebookPen,
     tone: 'bg-rose-50 text-rose-500',
-    title: '매일 1분 기록',
-    desc: '짧은 체크인만으로 주기와 증상을 한눈에 정리해요.',
+    title: '1 minute a day',
+    desc: 'A quick check-in is all it takes to track your cycle and symptoms.',
   },
   {
     icon: Sparkles,
     tone: 'bg-violet-50 text-violet-500',
-    title: '미리 알고 대비해요',
-    desc: '다가오는 통증 위험을 미리 예측해서 준비할 시간을 드려요.',
+    title: 'Know before it happens',
+    desc: 'We predict upcoming pain risk so you have time to prepare.',
   },
   {
     icon: Lock,
     tone: 'bg-emerald-50 text-emerald-500',
-    title: '나에게 맞춰지는 예측',
-    desc: '기록이 쌓일수록 나만을 위한 정확도로 다듬어져요.',
+    title: 'Predictions tuned to you',
+    desc: 'The more you log, the more accurate it gets for you.',
   },
 ]
 
@@ -30,21 +30,21 @@ function NoLogin() {
     <div className="min-h-screen bg-white px-6 pb-10 pt-16">
       <div className="mx-auto max-w-md">
         <h1 className="text-3xl font-bold leading-snug text-gray-900">
-          매일 조금 더
+          A little more
           <br />
-          나를 이해하는 시간,
+          time to understand you,
           <br />
-          <span className="text-rose-500">WH</span>
+          <span className="text-rose-500">CrampCast</span>
         </h1>
         <p className="mt-4 text-sm leading-relaxed text-gray-400">
-          기록이 쌓일수록 예측은 더 정확해져요.
+          The more you log, the more accurate the prediction gets.
           <br />
-          오늘 컨디션부터 가볍게 남겨보세요.
+          Start with today&apos;s condition.
         </p>
 
         <div className="mt-8 space-y-3">
           {FEATURES.map(({ icon: Icon, tone, title, desc }) => (
-            <div key={title} className="flex gap-3 rounded-2xl bg-gray-50 p-4">
+            <div key={title} className="flex gap-3 rounded-2xl bg-white p-4">
               <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${tone}`}>
                 <Icon size={18} />
               </span>
@@ -60,20 +60,20 @@ function NoLogin() {
           <button
             type="button"
             onClick={() => navigate('/login')}
-            className="w-full rounded-xl bg-rose-400 py-3 text-sm font-semibold text-white shadow-sm"
+            className="w-full rounded-xl bg-rose-400 py-3 text-sm font-semibold text-white"
           >
-            로그인
+            Log in
           </button>
           <button
             type="button"
             onClick={() => navigate('/signup')}
             className="w-full rounded-xl border border-gray-200 bg-white py-3 text-sm font-semibold text-gray-600"
           >
-            회원가입
+            Sign up
           </button>
         </div>
 
-        <p className="mt-6 text-center text-xs text-gray-400">이제, 나를 위한 첫 기록을 남겨볼까요?</p>
+        <p className="mt-6 text-center text-xs text-gray-400">Ready to log your first entry?</p>
       </div>
     </div>
   )

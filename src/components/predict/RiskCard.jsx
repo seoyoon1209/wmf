@@ -7,7 +7,7 @@ function RiskCard({ icon: Icon, label, level, percent, tone }) {
   const { bar, level: levelColor } = TONE_CLASSES[tone]
 
   return (
-    <div className="flex-1 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+    <div className="flex-1 rounded-2xl border border-gray-200 bg-white p-4">
       <div className="flex items-center gap-1.5 text-xs text-gray-400">
         <Icon size={14} />
         {label}

@@ -1,13 +1,16 @@
-// 온보딩 - 기초정보 입력 (SFR-002)
+// Onboarding - basic info input (SFR-002)
+import { useNavigate } from 'react-router'
 import { ArrowLeft } from 'lucide-react'
 import OnboardForm from '../../components/onboard/OnboardForm.jsx'
 
 function Onboard() {
+  const navigate = useNavigate()
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       <div className="mx-auto max-w-md px-5 pt-6">
         <div className="flex items-center justify-between">
-          <button type="button" className="text-gray-400">
+          <button type="button" onClick={() => navigate(-1)} className="text-gray-400">
             <ArrowLeft size={20} />
           </button>
           <div className="flex gap-1.5">
@@ -17,10 +20,6 @@ function Onboard() {
           </div>
         </div>
 
-        <h1 className="mt-6 text-2xl font-bold text-gray-900">건강 정보 설정</h1>
-        <p className="mt-2 text-sm leading-relaxed text-gray-400">
-          보다 정확한 생리 주기 예측과 건강 관리를 위해 기본 정보를 입력해 주세요.
-        </p>
 
         <div className="mt-6">
           <OnboardForm />
