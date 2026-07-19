@@ -8,7 +8,7 @@ function HormoneField({ label, unit, value, onChange }) {
   return (
     <label className="block">
       <span className="text-xs text-gray-400">{label}</span>
-      <div className="mt-1 flex items-end justify-between border-b border-gray-100 pb-2">
+      <div className="mt-1 flex items-end justify-between border-b border-gray-200 pb-2">
         <input
           type="number"
           step="0.1"
@@ -51,28 +51,28 @@ function HormoneForm() {
         e3g: e3g === '' ? null : Number(e3g),
         pdg: pdg === '' ? null : Number(pdg),
       })
-      showToast('호르몬 수치가 저장되었습니다')
+      showToast('Hormone levels saved')
     } catch (err) {
-      setError(err.response?.data?.detail ?? '저장에 실패했어요.')
+      setError(err.response?.data?.detail ?? 'Failed to save.')
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-      <p className="text-sm font-semibold text-gray-900">호르몬 자가보고</p>
-      <p className="mt-1 text-xs text-gray-400">정밀 모드 예측에 활용돼요. 검사 결과가 없으면 비워두셔도 돼요.</p>
+    <form onSubmit={handleSubmit} className="rounded-2xl border border-gray-200 bg-white p-5">
+      <p className="text-sm font-semibold text-gray-900">Hormone self-report</p>
+      <p className="mt-1 text-xs text-gray-400">Used for precision mode predictions. Leave blank if you have no test results.</p>
       <div className="mt-4 space-y-4">
         <HormoneField label="LH" unit="mIU/mL" value={lh} onChange={setLh} />
-        <HormoneField label="에스트로겐 (E3G)" unit="ng/mL" value={e3g} onChange={setE3g} />
-        <HormoneField label="프로게스테론 (PdG)" unit="µg/mL" value={pdg} onChange={setPdg} />
+        <HormoneField label="Estrogen (E3G)" unit="ng/mL" value={e3g} onChange={setE3g} />
+        <HormoneField label="Progesterone (PdG)" unit="µg/mL" value={pdg} onChange={setPdg} />
       </div>
 
       {error && <p className="mt-3 text-center text-xs text-rose-500">{error}</p>}
       <button
         type="submit"
-        className="mt-4 w-full rounded-xl bg-rose-400 py-3 text-sm font-semibold text-white shadow-sm"
+        className="mt-4 w-full rounded-xl bg-rose-400 py-3 text-sm font-semibold text-white"
       >
-        호르몬 수치 저장
+        Save hormone levels
       </button>
     </form>
   )

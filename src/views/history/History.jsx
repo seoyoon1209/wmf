@@ -1,4 +1,4 @@
-// 이력 조회/관리 (SFR-013)
+// History view/manage (SFR-013)
 import { useEffect, useState } from 'react'
 import { Droplet, NotebookText, ChevronRight } from 'lucide-react'
 import Layout from '../../components/common/Layout.jsx'
@@ -7,15 +7,15 @@ import { useAuth } from '../../context/AuthContext.jsx'
 
 function formatDate(d) {
   const date = new Date(d)
-  return `${date.getMonth() + 1}월 ${date.getDate()}일`
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
 
 function symptomSummary(diary) {
   const parts = []
-  if (diary.headache != null) parts.push('두통')
-  if (diary.stomachache != null) parts.push('복통')
-  if (diary.mood) parts.push(`기분 ${diary.mood}`)
-  return parts.length ? parts.join(' · ') : '특이 증상 없음'
+  if (diary.headache != null) parts.push('Headache')
+  if (diary.stomachache != null) parts.push('Cramps')
+  if (diary.mood) parts.push(`Mood ${diary.mood}`)
+  return parts.length ? parts.join(' · ') : 'No notable symptoms'
 }
 
 function History() {
@@ -28,12 +28,12 @@ function History() {
         key: `record-${r.record_id}`,
         type: 'record',
         title: r.end_date ? `${formatDate(r.start_date)} - ${formatDate(r.end_date)}` : `${formatDate(r.start_date)}~`,
-        detail: r.end_date ? '월경 기록' : '진행 중',
+        detail: r.end_date ? 'Period record' : 'Ongoing',
       }))
       const diaries = data.diaries.map((d) => ({
         key: `diary-${d.diary_id}`,
         type: 'diary',
-        title: `${formatDate(d.entry_date)} 증상 기록`,
+        title: `${formatDate(d.entry_date)} symptom log`,
         detail: symptomSummary(d),
       }))
       setItems([...records, ...diaries])
@@ -43,8 +43,6 @@ function History() {
   return (
     <Layout>
       <div className="px-5 pt-6">
-        <h1 className="text-2xl font-bold text-gray-900">이력 조회</h1>
-        <p className="mt-1 text-sm text-gray-400">지난 월경 기록과 증상 기록을 한눈에 확인하세요.</p>
 
         <ul className="mt-5 space-y-2">
           {items.map((item) => {
@@ -53,7 +51,7 @@ function History() {
             return (
               <li
                 key={item.key}
-                className="flex items-center justify-between rounded-2xl border border-gray-100 bg-white p-4 shadow-sm"
+                className="flex items-center justify-between rounded-2xl border border-gray-200 bg-white p-4"
               >
                 <div className="flex items-center gap-3">
                   <span className={`flex h-9 w-9 items-center justify-center rounded-full ${tone}`}>

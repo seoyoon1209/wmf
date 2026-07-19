@@ -28,33 +28,33 @@ function ProfileForm() {
       setSaved(true)
       setTimeout(() => setSaved(false), 1500)
     } catch (err) {
-      setError(err.response?.data?.detail ?? '저장에 실패했어요.')
+      setError(err.response?.data?.detail ?? 'Failed to save.')
     }
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-        <p className="text-sm font-semibold text-gray-900">사용자 정보</p>
+      <div className="rounded-2xl border border-gray-200 bg-white p-5">
+        <p className="text-sm font-semibold text-gray-900">User info</p>
         <div className="mt-4 space-y-4">
           <label className="block">
-            <span className="text-xs text-gray-400">이름</span>
+            <span className="text-xs text-gray-400">Name</span>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="mt-1 w-full border-b border-gray-100 pb-2 text-lg font-semibold text-gray-900 outline-none focus:border-rose-300"
+              className="mt-1 w-full border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900 outline-none focus:border-rose-300"
             />
           </label>
           <label className="block">
-            <span className="text-xs text-gray-400">아이디</span>
-            <p className="mt-1 border-b border-gray-100 pb-2 text-lg font-semibold text-gray-400">{user?.username}</p>
+            <span className="text-xs text-gray-400">Username</span>
+            <p className="mt-1 border-b border-gray-200 pb-2 text-lg font-semibold text-gray-400">{user?.username}</p>
           </label>
         </div>
       </div>
 
-      <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-        <p className="text-sm font-semibold text-gray-900">예측 모드</p>
-        <p className="mt-1 text-xs text-gray-400">정밀 모드는 호르몬 수치 입력을 포함해요.</p>
+      <div className="rounded-2xl border border-gray-200 bg-white p-5">
+        <p className="text-sm font-semibold text-gray-900">Prediction mode</p>
+        <p className="mt-1 text-xs text-gray-400">Precision mode includes hormone level input.</p>
         <div className="mt-3 grid grid-cols-2 gap-2">
           <button
             type="button"
@@ -63,7 +63,7 @@ function ProfileForm() {
               mode === 'precision' ? 'bg-rose-400 text-white' : 'border border-gray-200 text-gray-500'
             }`}
           >
-            정밀 모드
+            Precision
           </button>
           <button
             type="button"
@@ -72,15 +72,15 @@ function ProfileForm() {
               mode === 'simple' ? 'bg-rose-400 text-white' : 'border border-gray-200 text-gray-500'
             }`}
           >
-            간편 모드
+            Simple
           </button>
         </div>
       </div>
 
-      <div className="flex items-center justify-between rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+      <div className="flex items-center justify-between rounded-2xl border border-gray-200 bg-white p-5">
         <div>
-          <p className="text-sm font-medium text-gray-900">건강정보 수집·이용 동의</p>
-          <p className="mt-1 text-xs text-gray-400">동의를 철회하면 예측 기능 사용이 제한돼요.</p>
+          <p className="text-sm font-medium text-gray-900">Health data consent</p>
+          <p className="mt-1 text-xs text-gray-400">Withdrawing consent limits prediction features.</p>
         </div>
         <button
           type="button"
@@ -88,20 +88,21 @@ function ProfileForm() {
           className={`h-6 w-11 shrink-0 rounded-full transition-colors ${consent ? 'bg-rose-400' : 'bg-gray-200'}`}
         >
           <span
-            className={`block h-5 w-5 rounded-full bg-white shadow transition-transform ${
+            className={`block h-5 w-5 rounded-full bg-white transition-transform ${
               consent ? 'translate-x-5' : 'translate-x-0.5'
             }`}
           />
         </button>
       </div>
 
-      <p className="rounded-2xl bg-gray-50 p-4 text-xs leading-relaxed text-gray-400">
-        본 서비스는 진단 도구가 아닌 참고용 건강 관리 도우미입니다. 증상이 지속되면 의료진과 상담해주세요.
+      <p className="rounded-2xl bg-white p-4 text-xs leading-relaxed text-gray-400">
+        This service is a wellness helper for reference only, not a diagnostic tool. Please consult a doctor if
+        symptoms persist.
       </p>
 
       {error && <p className="text-center text-xs text-rose-500">{error}</p>}
-      <button type="submit" className="w-full rounded-xl bg-rose-400 py-3 text-sm font-semibold text-white shadow-sm">
-        {saved ? '저장됨' : '변경사항 저장'}
+      <button type="submit" className="w-full rounded-xl bg-rose-400 py-3 text-sm font-semibold text-white">
+        {saved ? 'Saved' : 'Save changes'}
       </button>
     </form>
   )

@@ -1,14 +1,15 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { Lock } from 'lucide-react'
 import api from '../../api/axios.js'
 import { useAuth } from '../../context/AuthContext.jsx'
+import { useToast } from '../../context/ToastContext.jsx'
 
 function FieldRow({ label, value, onChange, unit }) {
   return (
     <label className="block">
       <span className="text-xs text-gray-400">{label}</span>
-      <div className="mt-1 flex items-end justify-between border-b border-gray-100 pb-2">
+      <div className="mt-1 flex items-end justify-between border-b border-gray-200 pb-2">
         <input
           type="number"
           value={value}
@@ -29,7 +30,19 @@ function OnboardForm() {
   const [painHistory, setPainHistory] = useState(false)
   const [error, setError] = useState('')
   const { user } = useAuth()
+  const { showToast } = useToast()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    api.get(`/onboard/${user.username}`).then(({ data }) => {
+      if (!data) return
+      setAge(data.age)
+      setMenarcheAge(data.menarche_age)
+      setCycleLength(data.cycle_length)
+      setRegular(data.cycle_regular)
+      setPainHistory(data.pain_history === 'Mild period pain')
+    })
+  }, [user.username])
 
   const handleSubmit = async () => {
     setError('')
@@ -39,31 +52,32 @@ function OnboardForm() {
         menarche_age: menarcheAge,
         cycle_length: cycleLength,
         cycle_regular: regular,
-        pain_history: painHistory ? '경미한 생리통 있음' : '통증 없음',
+        pain_history: painHistory ? 'Mild period pain' : 'No pain',
       })
+      showToast('Your basic info has been saved')
       navigate('/record')
     } catch (err) {
-      setError(err.response?.data?.detail ?? '저장에 실패했어요.')
+      setError(err.response?.data?.detail ?? 'Failed to save.')
     }
   }
 
   return (
     <div className="space-y-4">
-      <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-        <p className="text-sm font-semibold text-gray-900">기본 신체 정보</p>
+      <div className="rounded-2xl border border-gray-200 bg-white p-5">
+        <p className="text-sm font-semibold text-gray-900">Basic info</p>
         <div className="mt-4 space-y-4">
-          <FieldRow label="나이" value={age} onChange={setAge} unit="세" />
-          <FieldRow label="초경 연령" value={menarcheAge} onChange={setMenarcheAge} unit="세" />
+          <FieldRow label="Age" value={age} onChange={setAge} unit="yrs" />
+          <FieldRow label="Age at first period" value={menarcheAge} onChange={setMenarcheAge} unit="yrs" />
         </div>
       </div>
 
-      <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-        <p className="text-sm font-semibold text-gray-900">주기 패턴</p>
+      <div className="rounded-2xl border border-gray-200 bg-white p-5">
+        <p className="text-sm font-semibold text-gray-900">Cycle pattern</p>
         <div className="mt-4">
-          <FieldRow label="평균 주기 길이" value={cycleLength} onChange={setCycleLength} unit="일" />
+          <FieldRow label="Average cycle length" value={cycleLength} onChange={setCycleLength} unit="days" />
         </div>
         <div className="mt-4">
-          <p className="mb-2 text-xs text-gray-400">주기 규칙성</p>
+          <p className="mb-2 text-xs text-gray-400">Cycle regularity</p>
           <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
@@ -72,7 +86,7 @@ function OnboardForm() {
                 regular ? 'bg-rose-400 text-white' : 'border border-gray-200 text-gray-500'
               }`}
             >
-              규칙적
+              Regular
             </button>
             <button
               type="button"
@@ -81,16 +95,16 @@ function OnboardForm() {
                 !regular ? 'bg-rose-400 text-white' : 'border border-gray-200 text-gray-500'
               }`}
             >
-              불규칙적
+              Irregular
             </button>
           </div>
         </div>
       </div>
 
-      <div className="flex items-center justify-between rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+      <div className="flex items-center justify-between rounded-2xl border border-gray-200 bg-white p-5">
         <div>
-          <p className="text-sm font-medium text-gray-900">과거 생리통 경험 여부</p>
-          <p className="mt-1 text-xs text-gray-400">증상 예측 모델링에 활용됩니다</p>
+          <p className="text-sm font-medium text-gray-900">History of period pain</p>
+          <p className="mt-1 text-xs text-gray-400">Used for symptom prediction modeling</p>
         </div>
         <button
           type="button"
@@ -100,18 +114,18 @@ function OnboardForm() {
           }`}
         >
           <span
-            className={`block h-5 w-5 rounded-full bg-white shadow transition-transform ${
+            className={`block h-5 w-5 rounded-full bg-white transition-transform ${
               painHistory ? 'translate-x-5' : 'translate-x-0.5'
             }`}
           />
         </button>
       </div>
 
-      <div className="flex gap-3 rounded-2xl bg-gray-50 p-4 text-xs leading-relaxed text-gray-400">
+      <div className="flex gap-3 rounded-2xl bg-white p-4 text-xs leading-relaxed text-gray-400">
         <Lock size={16} className="mt-0.5 shrink-0" />
         <p>
-          입력하신 모든 건강 정보는 종단간 암호화되어 보호됩니다. 귀하의 데이터는 생리 주기 예측 기능을 수행하는
-          목적 이외에는 사용되지 않으며, 언제든지 삭제를 요청하실 수 있습니다.
+          All the health information you enter is encrypted end-to-end. Your data is only used to power cycle
+          prediction, and you can request deletion at any time.
         </p>
       </div>
 
@@ -119,12 +133,12 @@ function OnboardForm() {
       <button
         type="button"
         onClick={handleSubmit}
-        className="w-full rounded-xl bg-rose-400 py-3 text-sm font-semibold text-white shadow-sm"
+        className="w-full rounded-xl bg-rose-400 py-3 text-sm font-semibold text-white"
       >
-        시작하기
+        Get started
       </button>
       <p className="pb-6 text-center text-xs text-gray-400">
-        계속 진행함으로써 <span className="text-rose-400 underline">개인정보 처리방침</span>에 동의하게 됩니다.
+        By continuing, you agree to our <span className="text-rose-400 underline">privacy policy</span>.
       </p>
     </div>
   )

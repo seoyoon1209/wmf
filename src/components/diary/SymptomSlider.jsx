@@ -1,6 +1,6 @@
 function SymptomSlider({ icon: Icon, label, value, onChange, max = 5 }) {
   return (
-    <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+    <div className="rounded-2xl border border-gray-200 bg-white p-4">
       <div className="flex items-center justify-between text-sm">
         <span className="flex items-center gap-2 font-medium text-gray-900">
           <Icon size={16} className="text-gray-400" />
@@ -17,8 +17,8 @@ function SymptomSlider({ icon: Icon, label, value, onChange, max = 5 }) {
         className="mt-3 w-full accent-rose-400"
       />
       <div className="mt-1 flex justify-between text-xs text-gray-400">
-        <span>없음</span>
-        <span>심함</span>
+        <span>None</span>
+        <span>Severe</span>
       </div>
     </div>
   )

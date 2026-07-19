@@ -1,4 +1,4 @@
-// 증상/생활/호르몬 자가보고 (SFR-004~006)
+// Symptom/lifestyle/hormone self-report (SFR-004~006)
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { Brain, Flame, Smile, BatteryLow, Activity, Plus, Moon, Gauge, Star } from 'lucide-react'
@@ -8,12 +8,12 @@ import api from '../../api/axios.js'
 import { useAuth } from '../../context/AuthContext.jsx'
 
 const SYMPTOMS = [
-  { key: 'headache', label: '두통', icon: Brain },
-  { key: 'stomachache', label: '복통', icon: Flame },
-  { key: 'mood', label: '기분/감정', icon: Smile },
-  { key: 'fatigue', label: '피로', icon: BatteryLow },
-  { key: 'tenderness', label: '유방압통', icon: Activity },
-  { key: 'add', label: '추가', icon: Plus },
+  { key: 'headache', label: 'Headache', icon: Brain },
+  { key: 'stomachache', label: 'Cramps', icon: Flame },
+  { key: 'mood', label: 'Mood', icon: Smile },
+  { key: 'fatigue', label: 'Fatigue', icon: BatteryLow },
+  { key: 'tenderness', label: 'Sore breasts', icon: Activity },
+  { key: 'add', label: 'Add', icon: Plus },
 ]
 
 function Diary() {
@@ -37,21 +37,20 @@ function Diary() {
         entry_date: today,
         headache: selected.includes('headache') ? painLevel : null,
         stomachache: selected.includes('stomachache') ? painLevel : null,
-        mood: selected.includes('mood') ? '저하' : null,
+        mood: selected.includes('mood') ? 'low' : null,
         fatigue: selected.includes('fatigue') ? painLevel : null,
         sleep_quality: sleep,
         stress,
       })
       navigate('/history')
     } catch (err) {
-      setError(err.response?.data?.detail ?? '저장에 실패했어요.')
+      setError(err.response?.data?.detail ?? 'Failed to save.')
     }
   }
 
   return (
     <Layout>
       <div className="px-5 pt-6">
-        <h1 className="text-2xl font-bold text-gray-900">오늘의 증상</h1>
 
         <div className="mt-5 grid grid-cols-3 gap-3">
           {SYMPTOMS.map(({ key, label, icon }) => (
@@ -59,9 +58,9 @@ function Diary() {
           ))}
         </div>
 
-        <div className="mt-6 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+        <div className="mt-6 rounded-2xl border border-gray-200 bg-white p-4">
           <div className="flex items-center justify-between text-sm">
-            <span className="font-medium text-gray-900">통증 강도</span>
+            <span className="font-medium text-gray-900">Pain level</span>
             <span className="font-semibold text-rose-500">{painLevel}</span>
           </div>
           <input
@@ -73,17 +72,17 @@ function Diary() {
             className="mt-3 w-full accent-rose-400"
           />
           <div className="mt-1 flex justify-between text-xs text-gray-400">
-            <span>없음</span>
-            <span>심함</span>
+            <span>None</span>
+            <span>Severe</span>
           </div>
         </div>
 
-        <h2 className="mt-6 text-sm font-semibold text-gray-900">생활 기록</h2>
+        <h2 className="mt-6 text-sm font-semibold text-gray-900">Lifestyle log</h2>
         <div className="mt-2 space-y-3">
-          <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+          <div className="rounded-2xl border border-gray-200 bg-white p-4">
             <span className="flex items-center gap-2 text-sm font-medium text-gray-900">
               <Moon size={16} className="text-gray-400" />
-              수면의 질
+              Sleep quality
             </span>
             <div className="mt-3 flex gap-1">
               {[1, 2, 3, 4, 5].map((n) => (
@@ -94,11 +93,11 @@ function Diary() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+          <div className="rounded-2xl border border-gray-200 bg-white p-4">
             <div className="flex items-center justify-between text-sm">
               <span className="flex items-center gap-2 font-medium text-gray-900">
                 <Gauge size={16} className="text-gray-400" />
-                스트레스 수준
+                Stress level
               </span>
               <span className="text-gray-400">{stress}</span>
             </div>
@@ -111,8 +110,8 @@ function Diary() {
               className="mt-3 w-full accent-rose-400"
             />
             <div className="mt-1 flex justify-between text-xs text-gray-400">
-              <span>낮음</span>
-              <span>높음</span>
+              <span>Low</span>
+              <span>High</span>
             </div>
           </div>
         </div>
@@ -121,12 +120,12 @@ function Diary() {
         <button
           type="button"
           onClick={handleSubmit}
-          className="mt-6 w-full rounded-xl bg-rose-400 py-3 text-sm font-semibold text-white shadow-sm"
+          className="mt-6 w-full rounded-xl bg-rose-400 py-3 text-sm font-semibold text-white"
         >
-          기록 완료
+          Log entry
         </button>
         <p className="mb-6 mt-2 text-center text-xs text-gray-400">
-          데이터는 건강 관리를 위한 참고용이며 진단 목적이 아닙니다.
+          This data is for wellness reference only and is not a diagnostic tool.
         </p>
       </div>
     </Layout>
